@@ -1,22 +1,48 @@
 // api/users.js
+import { supabase } from './_supabase.js';
+
+const parseDate = (value) => {
+  if (!value || typeof value !== 'string' || value.length !== 8) return null;
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(4, 6));
+  const day = Number(value.slice(6, 8));
+  if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) return null;
+  return { year, month, day };
+};
+
+const toUtcRangeStart = ({ year, month, day }) =>
+  new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)).toISOString();
+
+const toUtcRangeEnd = ({ year, month, day }) =>
+  new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)).toISOString();
 
 export default async function handler(req, res) {
   try {
-    const { user, apikey, df, dt } = req.query;
+    const { df, dt, search } = req.query;
 
-    const url = new URL('https://gmin.onegrindersguild.com/api.get.user.php');
-    if (user)   url.searchParams.set('user', user);
-    if (apikey) url.searchParams.set('apikey', apikey);
-    if (df)     url.searchParams.set('df', df);
-    if (dt)     url.searchParams.set('dt', dt);
+    let query = supabase.from('user_profiles').select('*');
 
-    const response = await fetch(url.toString());
-    const text = await response.text();
+    const dfDate = parseDate(df);
+    const dtDate = parseDate(dt);
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(response.status).send(text);
+    if (dfDate) {
+      query = query.gte('date_created', toUtcRangeStart(dfDate));
+    }
+    if (dtDate) {
+      query = query.lte('date_created', toUtcRangeEnd(dtDate));
+    }
+
+    if (search && typeof search === 'string') {
+      const term = `%${search}%`;
+      query = query.or(`username.ilike.${term},name.ilike.${term}`);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    res.status(200).json({ data: data ?? [] });
   } catch (err) {
-    console.error('Vercel /api/users error:', err);
+    console.error('api/users error', err);
     res.status(500).json({ error: 'Proxy failed', details: err.message });
   }
 }
