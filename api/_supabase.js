@@ -1,6 +1,21 @@
-import { createClient } from '@supabase/supabase-js';
+// api/_supabase.js
+let _client = null;
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+export async function getSupabase() {
+  if (_client) return _client;
 
-export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!url) throw new Error("Missing SUPABASE_URL");
+  if (!key) throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY");
+
+  // ✅ dynamic import works regardless of ESM/CJS build mode
+  const { createClient } = await import("@supabase/supabase-js");
+
+  _client = createClient(url, key, {
+    auth: { persistSession: false },
+  });
+
+  return _client;
+}
