@@ -1,49 +1,48 @@
 // api/networkActivity.js
+import { getSupabase } from './_supabase.js';
 
-import crypto from 'crypto';
+const parseDate = (value) => {
+  if (!value || typeof value !== 'string' || value.length !== 8) return null;
+  const year = Number(value.slice(0, 4));
+  const month = Number(value.slice(4, 6));
+  const day = Number(value.slice(6, 8));
+  if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) return null;
+  return { year, month, day };
+};
 
-// ✅ Use the hash that works in Postman for the full tree
-const ROOT_NETWORK_ACTIVITY_HASH = 'a835fe3a228fc669c76b90504b7c08e5';
+const toUtcRangeStart = ({ year, month, day }) =>
+  new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)).toISOString();
+
+const toUtcRangeEnd = ({ year, month, day }) =>
+  new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)).toISOString();
 
 export default async function handler(req, res) {
   try {
-    const { user, apikey, username, accounthash } = req.query;
+    const supabase = await getSupabase();
+    const { df, dt, username } = req.query;
 
-    const url = new URL('https://gmin.onegrindersguild.com/api.get.user.network.activity.php');
-    if (user)   url.searchParams.set('user', user);
-    if (apikey) url.searchParams.set('apikey', apikey);
+    let query = supabase.from('network_activity').select('*');
 
-    let hashToSend = accounthash;
+    const dfDate = parseDate(df);
+    const dtDate = parseDate(dt);
 
-    // If no explicit hash was provided, derive it
-    if (!hashToSend) {
-      if (username) {
-        // ✅ Correct MD5 usage
-        hashToSend = crypto.createHash('md5').update(username).digest('hex');
-      } else {
-        // ✅ Fall back to the root tree hash
-        hashToSend = ROOT_NETWORK_ACTIVITY_HASH;
-      }
+    if (dfDate) {
+      query = query.gte('request_date', toUtcRangeStart(dfDate));
+    }
+    if (dtDate) {
+      query = query.lte('request_date', toUtcRangeEnd(dtDate));
     }
 
-    url.searchParams.set('accounthash', hashToSend);
+    if (username && typeof username === 'string') {
+      query = query.ilike('user_name', `%${username}%`);
+    }
 
-    console.log('[Vercel] Calling NETWORK ACTIVITY upstream:', url.toString());
+    const { data, error } = await query;
+    if (error) throw error;
 
-    const response = await fetch(url.toString());
-    const text = await response.text();
-
-    console.log(
-      '[Vercel] NETWORK ACTIVITY upstream status:',
-      response.status,
-      'length:',
-      text.length
-    );
-
-    res.setHeader('Content-Type', 'application/json');
-    res.status(response.status).send(text);
+    return res.status(200).json({ data: data ?? [] });
   } catch (err) {
-    console.error('Vercel /api/networkActivity failed:', err);
-    res.status(500).json({ error: 'Proxy failed', details: err.message });
+    console.error('api/networkActivity error', err);
+    return res.status(500).json({ error: 'Proxy failed', details: err.message });
   }
 }

@@ -43,8 +43,12 @@ export default async function handler(req, res) {
     const dfDate = parseDate(df);
     const dtDate = parseDate(dt);
 
-    if (dfDate) query = query.gte('date_created', toUtcRangeStart(dfDate));
-    if (dtDate) query = query.lte('date_created', toUtcRangeEnd(dtDate));
+    if (dfDate) {
+      query = query.gte('date_created', toUtcRangeStart(dfDate));
+    }
+    if (dtDate) {
+      query = query.lte('date_created', toUtcRangeEnd(dtDate));
+    }
 
     if (search && typeof search === 'string') {
       const term = `%${search}%`;
@@ -52,24 +56,11 @@ export default async function handler(req, res) {
     }
 
     const { data, error } = await query;
+    if (error) throw error;
 
-    if (error) {
-      console.error('Supabase query error:', error);
-      return res.status(500).json({
-        error: 'Supabase query failed',
-        details: error.message,
-        code: error.code,
-        hint: error.hint,
-      });
-    }
-
-    return res.status(200).json({ data: data ?? [] });
+    res.status(200).json({ data: data ?? [] });
   } catch (err) {
-    console.error('api/users crash:', err);
-    return res.status(500).json({
-      error: 'Function crashed',
-      details: err?.message ?? String(err),
-      stack: err?.stack ?? null,
-    });
+    console.error('api/users error', err);
+    res.status(500).json({ error: 'Proxy failed', details: err.message });
   }
 }
