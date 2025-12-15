@@ -106,6 +106,8 @@ async function loadSponsoredDownlineData({ username }) {
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
 
+    window.setConnectionIndicator?.('conn-indicator-sponsoredDownline', 'ok');
+
     applySponsoredDownlineVisibleRows(sponsoredDownlineCachedRows);
     return rows;
   } catch (error) {
@@ -115,6 +117,7 @@ async function loadSponsoredDownlineData({ username }) {
         '<div class="empty-state">Sorry, we could not load the sponsored downline data. Please try again.</div>';
     }
     applySponsoredDownlineVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-sponsoredDownline', 'bad');
     return [];
   }
 }
@@ -187,6 +190,7 @@ function initSponsoredDownlinePage() {
   }
 
   // Initial load with NO username → backend uses ROOT_DOWNLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-sponsoredDownline', 'checking');
   loadSponsoredDownlineData({ username: '' });
 }
 

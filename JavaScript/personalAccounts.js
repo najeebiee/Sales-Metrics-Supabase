@@ -108,6 +108,7 @@ async function loadPersonalAccountsData({ username }) {
     personalAccountsCachedRows = rows;
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
+    window.setConnectionIndicator?.('conn-indicator-personalAccounts', 'ok');
     applyPersonalAccountsVisibleRows(personalAccountsCachedRows);
     return rows;
   } catch (error) {
@@ -117,6 +118,7 @@ async function loadPersonalAccountsData({ username }) {
         '<div class="empty-state">Sorry, we could not load the personal accounts data. Please try again.</div>';
     }
     applyPersonalAccountsVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-personalAccounts', 'bad');
     return [];
   }
 }
@@ -189,6 +191,7 @@ function initPersonalAccountsPage() {
   }
 
   // Initial load with NO username → backend uses ROOT_DOWNLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-personalAccounts', 'checking');
   loadPersonalAccountsData({ username: '' });
 }
 

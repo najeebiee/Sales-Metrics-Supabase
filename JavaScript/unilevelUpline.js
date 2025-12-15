@@ -108,6 +108,7 @@ async function loadUnilevelUplineData({ username }) {
     unilevelUplineCachedRows = rows;
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
+    window.setConnectionIndicator?.('conn-indicator-unilevelUpline', 'ok');
     applyUnilevelUplineVisibleRows(unilevelUplineCachedRows);
     return rows;
   } catch (error) {
@@ -117,6 +118,7 @@ async function loadUnilevelUplineData({ username }) {
         '<div class="empty-state">Sorry, we could not load the unilevel upline data. Please try again.</div>';
     }
     applyUnilevelUplineVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-unilevelUpline', 'bad');
     return [];
   }
 }
@@ -189,6 +191,7 @@ function initUnilevelUplinePage() {
   }
 
   // Initial load with NO username → backend uses ROOT_UPLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-unilevelUpline', 'checking');
   loadUnilevelUplineData({ username: '' });
 }
 

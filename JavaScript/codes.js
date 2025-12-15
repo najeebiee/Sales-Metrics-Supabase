@@ -107,6 +107,8 @@ async function loadCodesData({ df, dt }) {
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
 
+    window.setConnectionIndicator?.('conn-indicator-codes', 'ok');
+
     applyCodesVisibleRows(codesCachedRows);
   } catch (err) {
     console.error('Failed to load codes', err);
@@ -118,6 +120,7 @@ async function loadCodesData({ df, dt }) {
     }
     codesCachedRows = [];
     applyCodesVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-codes', 'bad');
     return [];
   }
 }
@@ -188,6 +191,8 @@ function initCodesPage() {
       exportTableToPdf(codesColumns, codesVisibleRows, 'Codes');
     });
   }
+
+  window.setConnectionIndicator?.('conn-indicator-codes', 'checking');
 
   const initialDf     = formatDateForApi(fromInput.value);
   const initialDt     = formatDateForApi(toInput.value);

@@ -1,7 +1,18 @@
 <section id="personal-accounts-section" class="page">
   <header class="page-header">
-    <h1 class="page-title">Personal Accounts</h1>
-    <p class="page-subtitle">This page will list personal account data from the API.</p>
+    <div class="page-header-row">
+      <div class="page-header-left">
+        <h1 class="page-title">Personal Accounts</h1>
+        <p class="page-subtitle">This page will list personal account data from the API.</p>
+      </div>
+
+      <div class="page-header-right">
+        <span class="status-pill status-pill--checking" id="conn-indicator-personalAccounts">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking…</span>
+        </span>
+      </div>
+    </div>
   </header>
 
   <form id="personal-accounts-filter-form" class="toolbar">

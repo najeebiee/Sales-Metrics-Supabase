@@ -102,6 +102,8 @@ async function loadUserUplineData({ username }) {
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
 
+    window.setConnectionIndicator?.('conn-indicator-userUpline', 'ok');
+
     applyUserUplineVisibleRows(userUplineCachedRows);
     return rows;
   } catch (error) {
@@ -111,6 +113,7 @@ async function loadUserUplineData({ username }) {
         '<div class="empty-state">Sorry, we could not load the user upline data. Please try again.</div>';
     }
     applyUserUplineVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-userUpline', 'bad');
     return [];
   }
 }
@@ -172,6 +175,7 @@ function initUserUplinePage() {
   }
 
   // Initial load with NO username → backend uses ROOT_UPLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-userUpline', 'checking');
   loadUserUplineData({ username: '' });
 }
 

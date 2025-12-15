@@ -112,6 +112,7 @@ async function loadSalesData({ df, dt }) {
     salesCachedRows = rows;
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
+    window.setConnectionIndicator?.('conn-indicator-sales', 'ok');
     applySalesVisibleRows(salesCachedRows);
     return rows;
   } catch (err) {
@@ -125,6 +126,7 @@ async function loadSalesData({ df, dt }) {
     }
     salesCachedRows = [];
     applySalesVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-sales', 'bad');
     return [];
   }
 }
@@ -194,6 +196,8 @@ function initSalesPage() {
       exportTableToPdf(salesColumns, salesVisibleRows, 'Sales');
     });
   }
+
+  window.setConnectionIndicator?.('conn-indicator-sales', 'checking');
 
   const initialDf = formatDateForApi(fromInput.value);
   const initialDt = formatDateForApi(toInput.value);
