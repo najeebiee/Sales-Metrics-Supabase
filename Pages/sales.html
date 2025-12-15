@@ -1,7 +1,18 @@
 <section id="sales-page" class="page">
   <header class="page-header">
-    <h1 class="page-title">Sales</h1>
-    <p class="page-subtitle">This page will display sales metrics loaded from the API.</p>
+    <div class="page-header-row">
+      <div class="page-header-left">
+        <h1 class="page-title">Sales</h1>
+        <p class="page-subtitle">This page will display sales metrics loaded from the API.</p>
+      </div>
+
+      <div class="page-header-right">
+        <span class="status-pill status-pill--checking" id="conn-indicator-sales">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking…</span>
+        </span>
+      </div>
+    </div>
   </header>
 
   <form id="sales-filter-form" class="toolbar">

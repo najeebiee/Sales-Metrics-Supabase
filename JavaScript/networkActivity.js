@@ -105,6 +105,7 @@ async function loadNetworkActivityData({ username }) {
     networkActivityCachedRows = rows;
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
+    window.setConnectionIndicator?.('conn-indicator-networkActivity', 'ok');
     applyNetworkActivityVisibleRows(networkActivityCachedRows);
     return rows;
   } catch (error) {
@@ -114,6 +115,7 @@ async function loadNetworkActivityData({ username }) {
         '<div class="empty-state">Sorry, we could not load the network activity data. Please try again.</div>';
     }
     applyNetworkActivityVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-networkActivity', 'bad');
     return [];
   }
 }
@@ -186,6 +188,7 @@ function initNetworkActivityPage() {
   }
 
   // Initial load with NO username → backend uses ROOT_DOWNLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-networkActivity', 'checking');
   loadNetworkActivityData({ username: '' });
 }
 

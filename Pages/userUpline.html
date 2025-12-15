@@ -1,7 +1,18 @@
 <section id="user-upline-section" class="page">
   <header class="page-header">
-    <h1 class="page-title">User Upline</h1>
-    <p class="page-subtitle">This page will list user upline data from the API.</p>
+    <div class="page-header-row">
+      <div class="page-header-left">
+        <h1 class="page-title">User Upline</h1>
+        <p class="page-subtitle">This page will list user upline data from the API.</p>
+      </div>
+
+      <div class="page-header-right">
+        <span class="status-pill status-pill--checking" id="conn-indicator-userUpline">
+          <span class="status-dot"></span>
+          <span class="status-text">Checking…</span>
+        </span>
+      </div>
+    </div>
   </header>
 
   <form id="user-upline-filter-form" class="toolbar">

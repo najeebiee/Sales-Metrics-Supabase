@@ -106,6 +106,8 @@ async function loadBinaryDownlineData({ username }) {
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
 
+    window.setConnectionIndicator?.('conn-indicator-binaryDownline', 'ok');
+
     applyBinaryDownlineVisibleRows(binaryDownlineCachedRows);
     return rows;
   } catch (error) {
@@ -115,6 +117,7 @@ async function loadBinaryDownlineData({ username }) {
         '<div class="empty-state">Sorry, we could not load the binary downline data. Please try again.</div>';
     }
     applyBinaryDownlineVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-binaryDownline', 'bad');
     return [];
   }
 }
@@ -175,6 +178,7 @@ function initBinaryDownlinePage() {
   }
 
   // Initial load with NO username → backend uses ROOT_DOWNLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-binaryDownline', 'checking');
   loadBinaryDownlineData({ username: '' });
 }
 

@@ -108,6 +108,7 @@ async function loadUnilevelDownlineData({ username }) {
     unilevelDownlineCachedRows = rows;
     if (tableSearchInput) tableSearchInput.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
+    window.setConnectionIndicator?.('conn-indicator-unilevelDownline', 'ok');
     applyUnilevelDownlineVisibleRows(unilevelDownlineCachedRows);
     return rows;
   } catch (error) {
@@ -117,6 +118,7 @@ async function loadUnilevelDownlineData({ username }) {
         '<div class="empty-state">Sorry, we could not load the unilevel downline data. Please try again.</div>';
     }
     applyUnilevelDownlineVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-unilevelDownline', 'bad');
     return [];
   }
 }
@@ -189,6 +191,7 @@ function initUnilevelDownlinePage() {
   }
 
   // Initial load with NO username → backend uses ROOT_DOWNLINE_HASH
+  window.setConnectionIndicator?.('conn-indicator-unilevelDownline', 'checking');
   loadUnilevelDownlineData({ username: '' });
 }
 

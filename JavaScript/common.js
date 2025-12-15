@@ -200,6 +200,28 @@ function confirmExport(type, onConfirm) {
 
 window.confirmExport = confirmExport;
 
+// ---- CONNECTION INDICATOR (shared) ----
+function setConnectionIndicator(id, state) {
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.classList.remove('status-pill--checking', 'status-pill--ok', 'status-pill--bad');
+
+  const textEl = el.querySelector('.status-text');
+  if (state === 'ok') {
+    el.classList.add('status-pill--ok');
+    if (textEl) textEl.textContent = 'Connected';
+  } else if (state === 'bad') {
+    el.classList.add('status-pill--bad');
+    if (textEl) textEl.textContent = 'Disconnected';
+  } else {
+    el.classList.add('status-pill--checking');
+    if (textEl) textEl.textContent = 'Checking…';
+  }
+}
+
+window.setConnectionIndicator = setConnectionIndicator;
+
 // ---- PDF EXPORTER (shared) ----
 function exportTableToPdf(columns, rows, title) {
   if (!Array.isArray(rows) || rows.length === 0) {

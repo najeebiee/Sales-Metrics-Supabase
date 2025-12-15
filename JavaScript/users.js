@@ -123,6 +123,8 @@ async function loadUsersData({ df, dt }) {
     if (tableSearch) tableSearch.value = '';
     if (tableSearchClear) tableSearchClear.disabled = true;
 
+    window.setConnectionIndicator?.('conn-indicator-user', 'ok');
+
     applyUsersVisibleRows(usersCachedRows);
   } catch (err) {
     console.error('Failed to load users', err);
@@ -131,6 +133,7 @@ async function loadUsersData({ df, dt }) {
         '<div class="empty-state">Unable to load users. Please try again later.</div>';
     }
     applyUsersVisibleRows([]);
+    window.setConnectionIndicator?.('conn-indicator-user', 'bad');
     return [];
   }
 }
@@ -215,6 +218,8 @@ function initUsersPage() {
       exportTableToPdf(userColumns, usersVisibleRows, 'Users');
     });
   }
+
+  window.setConnectionIndicator?.('conn-indicator-user', 'checking');
 
   const initialDf      = formatDateForApi(fromInput.value);
   const initialDt      = formatDateForApi(toInput.value);
